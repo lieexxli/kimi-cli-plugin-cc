@@ -123,16 +123,16 @@ Examples:
 
 This plugin wraps the [Kimi CLI](https://github.com/MoonshotAI/kimi-cli) local binary. It leverages Claude Code's extension system to spawn sub-processes for foreground and background execution. 
 
-Unlike more complex plugins (like Codex), this plugin takes a minimalist approach using standard process spawning, reducing the need for an intermediate app server while still retaining the capability for powerful background job tracking. Progress reporting works by reading Kimi CLI `--output-format stream-json`.
+### Minimalist Architecture
+Unlike the original official Codex plugin (which uses a heavy `app-server` and `broker` architecture with complex TypeScript protocols), this Kimi plugin takes a drastically simplified approach:
+- **No Broker/App-Server**: It directly uses a lightweight `kimi-companion.mjs` script to spawn Kimi processes.
+- **Native JSONL Parsing**: Progress reporting works by directly reading the Kimi CLI's `--output-format stream-json`, separating `thinking` traces from `text` output in real-time.
+- **Robust State Management**: It reuses the battle-tested filesystem-based job tracking from the Codex plugin to support robust background running (`--background`) and cancellation.
+- **Cross-Platform**: Includes specific patches for proper process termination (`taskkill`) on localized Windows environments.
 
 ### Will it use my existing Kimi login?
 Yes. The plugin delegates directly to the local `kimi` executable in your environment. It uses the same authentication state and configurations you've already set up.
 
 ## Acknowledgments
 
-This project is a fork of and heavily inspired by the official [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc) repository. We adapted their cleanly designed task-runner and plugin architecture to bridge Claude Code with the Moonshot Kimi CLI instead of OpenAI Codex. All structural and architectural credit goes to the original authors at OpenAI.
-
-**Key differences from the original repository:**
-- Implemented a custom JSONL stream parser to decode Moonshot Kimi CLI's multi-part (`thinking` arrays vs `text` chunks) responses in real-time.
-- Fixed Windows process termination (`taskkill`) compatibility for localized environments (e.g., Chinese Windows).
-- Rebuilt the prompt routing pipeline to exclusively interface with the Moonshot Kimi API endpoint logic, adding dual-language documentation.
+This project is a fork of and conceptually inspired by the excellent baseline architecture provided by [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc). We adapted their cleanly designed task-runner and job-tracking architecture to build this lightweight, Kimi-native iteration. All structural credit for the overarching plugin design goes to the original authors at OpenAI.

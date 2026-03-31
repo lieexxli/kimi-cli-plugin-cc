@@ -123,16 +123,16 @@ claude plugin add /path/to/kimi-cli-plugin-cc
 
 本插件通过封装你本地的 [Kimi CLI](https://github.com/MoonshotAI/kimi-cli) 二进制程序来工作。它利用 Claude Code 的扩展系统直接拉起子进程来执行前台和后台任务。
 
-与更复杂的插件（如 OpenAI Codex 插件）不同，本插件采用了极简方案。它使用标准进程调度代替了中间应用服务器（App Server），同时通过解析 Kimi CLI 的 `--output-format stream-json` 日志流保证了后台任务进度报告和状态追踪等核心功能。
+### 极简架构设计
+与官方原版 Codex 插件（使用了包含 `app-server` 和 `broker` 的重型架构及复杂的 TypeScript 协议）不同，本 Kimi 插件采取了大幅简化的直连策略：
+- **无 Broker/App-Server**：完全去除了冗余的服务端点逻辑，仅依靠轻量级的 `kimi-companion.mjs` 脚本即可直接拉起并管理 Kimi 进程。
+- **原生 JSONL 解析**：通过监听 Kimi CLI 的 `--output-format stream-json` 日志流，实时分离深度思考（`thinking`）与最终结果（`text`），提供完美的终端交互视觉体验。
+- **健壮的状态追踪**：沿用了原项目中经过实战检验的基于文件系统的任务编排队列，完美支持 `--background` 后台挂起与多任务统筹。
+- **跨平台优化**：在底层补齐了包含中文 Windows 系统在内的多处平台兼容性 Bug（如修正了中文版 `taskkill` 返回值识别），保障了真正的多端稳定。
 
 ### 它会使用我现有的 Kimi 登录状态吗？
 是的。此插件直接调用你系统环境中的 `kimi` 可执行文件。它使用与你手动在终端运行 Kimi 时完全相同的身份验证信息和配置。
 
 ## 致谢 (Acknowledgments)
 
-本项目派生（Fork）且深度参考了官方的 [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc) 开源仓库。我们沿用了其设计精良的任务调度核心和插件架构，将其底层驱动从 OpenAI Codex 替换为了国内体验更佳的 Moonshot Kimi CLI。项目中所有的基础架构和系统设计，其核心版权和创意均归原作者所有。特此向 OpenAI 团队致谢！
-
-**本项目与原版的主要差异说明：**
-- **底层解析引擎重构**：编写了专门处理 Kimi CLI 独有 JSONL 流式输出协议的解析逻辑，实现了对复合结构（数组态的 `thinking` 思考过程和 `text` 结果）的分离与终端渲染。
-- **跨平台兼容性修复**：修复了原项目在关闭异步多进程树时，无法正确兼容非英文 Windows 系统（即 `taskkill` 中文环境奔溃）的缺陷。
-- **本地化对接**：剥离了重度依赖 Codex 的指令集，将任务通道专属重置为对接 Moonshot Kimi 模型体系，并补充了中英双语的实例文档。
+本项目派生（Fork）且深度借鉴了 [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc) 开源项目极其优秀的架构模式。我们沿用了其稳健的异步底层调度闭环，将其裁剪并重构为了一个适配 Kimi 环境的纯享直连轻量化版本。原项目所有的基础扩展骨架与交互设计理念，其核心版权和创意均归 OpenAI 作者团队所有。特此致谢！
