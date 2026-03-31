@@ -130,4 +130,9 @@ claude plugin add /path/to/kimi-cli-plugin-cc
 
 ## 致谢 (Acknowledgments)
 
-本项目派生（Fork）且深度参考了官方的 [codex-plugin-cc](https://github.com/anthropics/codex-plugin-cc) 开源仓库。我们沿用了其设计精良的任务调度核心和插件架构，将其底层驱动从 OpenAI Codex 替换为了国内体验更佳的 Moonshot Kimi CLI。项目中所有的基础架构和系统设计，其核心版权和创意均归原作者所有。特此致谢！
+本项目深度参考了 [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc) 官方开源仓库的优秀架构设计，并由独立开发者（Lihao / lieexxli）进行了重度的魔改和本土化重构。
+
+**本项目的核心技术重构（与原版的主要差异）包括：**
+- **底层解析引擎重写**：深度逆向并重构了 Kimi CLI 特有的深层 JSONL 流式输出协议，实现了对包含复合结构（数组态的 `thinking` 思考过程和 `text` 结果）的精准分离与实时终端炫酷渲染。
+- **Windows 跨平台灾难性 Bug 修复**：原项目在关闭异步多进程树时，无法正确兼容非英文 Windows 系统（会导致 `taskkill` 返回脏错误状态致使插件崩溃），本库已从底层修复了该跨平台本地化缺陷。
+- **去重定向化纯享对接**：将原版重度依赖 Codex 的指令集彻底剥离，重置了代理任务通道，使其变成一个毫无网络阻力、专属于 Moonshot Kimi 模型体系的、带有中英双语原本文档的国产化利器。
