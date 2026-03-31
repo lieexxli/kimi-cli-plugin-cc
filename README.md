@@ -130,9 +130,9 @@ Yes. The plugin delegates directly to the local `kimi` executable in your enviro
 
 ## Acknowledgments
 
-This project conceptually forks and iterates upon the excellent baseline architecture provided by [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc). While the original repository provided a robust structural pattern for Claude Code async plugins, the core engine has been significantly completely rebuilt by the community (specifically Lihao / lieexxli).
+This project is a fork of and heavily inspired by the official [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc) repository. We adapted their cleanly designed task-runner and plugin architecture to bridge Claude Code with the Moonshot Kimi CLI instead of OpenAI Codex. All structural and architectural credit goes to the original authors at OpenAI.
 
-**Key Independent Contributions in this version:**
-- Reverse-engineered and implemented a custom complex JSONL stream parser to seamlessly decode Moonshot Kimi CLI's multi-part (`thinking` arrays vs `text` chunks) responses in real-time.
-- Fixed severe cross-platform Windows process termination (`taskkill`) bugs from the original repository, specifically patching compatibility for localized environments (e.g., Chinese Windows).
-- Rebuilt the prompt routing pipeline to exclusively interface with the Moonshot Kimi API endpoint logic, adding vital dual-language documentation suitable for domestic developers.
+**Key differences from the original repository:**
+- Implemented a custom JSONL stream parser to decode Moonshot Kimi CLI's multi-part (`thinking` arrays vs `text` chunks) responses in real-time.
+- Fixed Windows process termination (`taskkill`) compatibility for localized environments (e.g., Chinese Windows).
+- Rebuilt the prompt routing pipeline to exclusively interface with the Moonshot Kimi API endpoint logic, adding dual-language documentation.
