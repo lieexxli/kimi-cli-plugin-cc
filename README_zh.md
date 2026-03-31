@@ -1,138 +1,96 @@
 # 适用于 Claude Code 的 Kimi CLI 插件
 
+[![GitHub License](https://img.shields.io/github/license/lieexxli/kimi-cli-plugin-cc)](LICENSE)
+[![Status](https://img.shields.io/badge/status-active-success.svg)]()
+
+> 基于 `openai/codex-plugin-cc` 进行深度“减法”重构与 Kimi 特性适配。摒弃沉重的 RPC 架构，换取针对 `kimi-cli` 的极致性能与全自动生产力转化。
+
 [English](README.md) | 简体中文
-
-在 Claude Code 内部使用 Kimi 进行代码审查，或者将复杂任务委托给 Kimi CLI 代理。
-
-这个插件旨在为 Claude Code 用户提供一种简便的方式，直接在现有的工作流中无缝接入 Kimi，利用另一个强大的独立代码助理来提供第二意见或处理繁重的工作。
-
-## 功能介绍
-- `/kimi:review` —— 让 Kimi 对代码进行只读的代码审查
-- `/kimi:rescue`、`/kimi:status`、`/kimi:result` 和 `/kimi:cancel` —— 委托后台任务并管理运行状态
-- 支持强大的委托能力，可开启 Kimi 的 `--thinking` 深度思考模式，或指定具体的模型版本 
-
-## 环境要求
-- 系统中已**安装 Kimi CLI**
-- **Node.js 18.18 或更高版本**
-
-## 安装指南
-
-你可以直接使用 GitHub URL 全局安装此插件：
-
-```bash
-claude plugin add https://github.com/lieexxli/kimi-cli-plugin-cc
-```
-
-或者将其克隆到本地后再安装：
-
-```bash
-git clone https://github.com/lieexxli/kimi-cli-plugin-cc.git
-claude plugin add /path/to/kimi-cli-plugin-cc
-```
-
-完成后，运行检查：
-
-```bash
-/kimi:setup
-```
-
-`/kimi:setup` 命令会告诉你 Kimi 是否已准备就绪，并在 PATH 环境变量中可用。
-
-如果已经安装了 Kimi 但还未登录，你需要先进行认证：
-
-```bash
-!kimi login
-```
-
-安装完毕后，你应该能看到：
-- 下方列出的所有斜杠命令
-- 在 `/agents` 中出现 `kimi:kimi-rescue` 子代理
 
 ---
 
-## 常用命令
+## 🚀 项目定位：从“装甲运钞车”到“超跑”的进化
 
-### `/kimi:review`
-对你当前的工作进行代码审查。当你想对未提交的更改进行独立审查，或是对比某个特定的基础分支（如 `main`）时非常有用。
+本项目是在 `openai/codex-plugin-cc` 基础上进行的**大幅度简化与适配重构**。原版 Codex 插件追求的是企业级的“绝对安全”，而 **Kimi CLI Plugin** 则专注于利用 Kimi 的长文本原生能力与极致的响应速度。
 
-示例：
+### 核心差异对比
+
+| 特性 | Codex 原版 (`codex-plugin-cc`) | Kimi 适配版 (本项目) |
+| :--- | :--- | :--- |
+| **底层架构** | **RPC / Broker 服务端**（重度状态维持） | **原生子进程 (Spawn)**（低延迟，轻量化） |
+| **执行策略** | **强制 Review Gate**（人工确认） | **全自动 YOLO**（默认开启 `--yolo`，自动驾驶） |
+| **解析机制** | **重度遥测解析**（复杂工具追踪） | **流式实时解析**（实时查看思考链路与工具执行） |
+| **设计哲学** | 工业级安全性，通过审计防止幻觉 | 高吞吐率，以开发者为中心的自动化 |
+
+---
+
+## ✨ 核心特性
+
+- **🚀 零配置快速启动**：不再需要复杂的 Broker 代理配置，只要 `kimi` 在你的 PATH 中，即可直接调用。
+- **📊 实时进度追踪**：在终端实时渲染 Kimi 的执行轨迹（Shell、文件操作等），并配有动态状态图标（⏳, ✅, ❌）。
+- **🧠 深度思考模式集成**：原生支持 `--thinking` 参数，允许强制 Kimi 在行动前进行深度逻辑拆解。
+- **⚡ 静默全自动执行**：底层强制注入 `--yolo` 标志，确保复杂任务无需反复手动确认。
+- **🛡️ 对抗性审查**：新增专门的安全性代码审计模式，以极其严苛的视角挖掘隐藏 Bug。
+- **⚠️ 退出安全关卡**：在退出会话时自动扫描未提交更改，防止带着 Bug 下班。
+- **🔄 Session 延续能力**：通过 `--session` 完美继承 Kimi 的会话一致性。
+
+---
+
+## 📖 使用指南
+
+### 核心命令
+
+| 命令 | 描述 |
+| :--- | :--- |
+| `/kimi:task` | 发起任务（重构、Debug、写功能等）。 |
+| `/kimi:status` | 查看后台任务状态及**实时工具执行进度**。 |
+| `/kimi:review` | 对当前 Git 更改进行标准代码审查。 |
+| `/kimi:review-adversarial`| **对抗性审计模式**，以更严苛的视觉扫描安全性问题。 |
+| `/kimi:result` | 查看已完成任务的最终输出。 |
+| `/kimi:cancel` | 终止正在运行的后台任务。 |
+| `/kimi:resume` | 通过 Job ID 恢复之前的 Kimi 会话。 |
+| `/kimi:setup` | 验证 Kimi CLI 环境与安装状态。 |
+
+### 命令示例
+
 ```bash
-/kimi:review
-/kimi:review --base main
-/kimi:review --background
-```
+# 在后台开启深度思考模式重构代码
+/kimi:task --background --thinking "将认证层重构为使用 JWT"
 
-此命令为只读命令。如果在后台运行，请使用 `/kimi:status` 检查进度。
-
-### `/kimi:rescue`
-通过 `kimi:kimi-rescue` 子代理将任务交给 Kimi。
-
-适用于你想让 Kimi 帮你处理以下事项：
-- 调查难以复现的 Bug
-- 在你做其他事时编写修复补丁
-- 继续执行某个长期调查任务
-
->**注意：** 这个插件派发的任务默认是只读的，以保护你的工作区安全。如果要允许 Kimi 修改你的本地文件，请明确加上 `--write` 标志。
-
-支持的可选参数：
-- `--background`：在后台运行任务
-- `--write`：允许 Kimi 修改文件
-- `--thinking` / `--no-thinking`：启用/禁用扩展深度思考
-- `--model <model>`：指定具体使用哪一个 Kimi 模型
-
-示例：
-```bash
-/kimi:rescue 调查测试开始报错的原因
-/kimi:rescue --write 修复失败的测试环节，用最安全的小范围补丁
-/kimi:rescue --background --thinking "重构数据库访问层"
-```
-
-你甚至可以直接用自然语言让 Claude Code 自己决定如何使用该子代理：
-```text
-让 Kimi 帮忙审查一下数据库连接部分代码，看看它的鲁棒性如何。
-```
-
-### `/kimi:status`
-查看当前仓库中正在运行或近期完成的 Kimi 任务状态。
-
-示例：
-```bash
-/kimi:status
+# 实时查看正在运行的任务步骤
 /kimi:status task-abc123
+
+# 发起一次高强度的安全性审查
+/kimi:review-adversarial --scope working-tree
 ```
 
-### `/kimi:result`
-查看后台已完成任务的最终输出结果。 
+---
 
-示例：
-```bash
-/kimi:result
-/kimi:result task-abc123
-```
+## 🛠️ 安装与设置
 
-### `/kimi:cancel`
-取消一个正在后台执行的 Kimi 任务。
+1. **前置条件**：安装 Kimi CLI 并登录。
+    ```bash
+    npm install -g @anthropic/kimi-cli
+    kimi login
+    ```
+2. **插件安装**：将本插件目录添加到你的 Claude Code 配置中。
 
-示例：
-```bash
-/kimi:cancel
-/kimi:cancel task-abc123
-```
+---
 
-## 工作原理
+## 🏗️ 架构说明
 
-本插件通过封装你本地的 [Kimi CLI](https://github.com/MoonshotAI/kimi-cli) 二进制程序来工作。它利用 Claude Code 的扩展系统直接拉起子进程来执行前台和后台任务。
+不同于原版 Codex 插件使用持久化的 `app-server`，本项目采用了极致简约的方案：
+- **直接派生 (Spawn)**：每个任务都直接派生一个 `kimi-cli` 子进程。
+- **JSONL 流解析**：通过直接读取 `--output-format stream-json`，实现“思考链路”与“文本输出”的毫秒级实时分离。
+- **生命周期钩子**：注册了 Session 退出钩子，用于执行安全检查并清理后台僵尸进程。
 
-### 极简架构设计
-与官方原版 Codex 插件（使用了包含 `app-server` 和 `broker` 的重型架构及复杂的 TypeScript 协议）不同，本 Kimi 插件采取了大幅简化的直连策略：
-- **无 Broker/App-Server**：完全去除了冗余的服务端点逻辑，仅依靠轻量级的 `kimi-companion.mjs` 脚本即可直接拉起并管理 Kimi 进程。
-- **原生 JSONL 解析**：通过监听 Kimi CLI 的 `--output-format stream-json` 日志流，实时分离深度思考（`thinking`）与最终结果（`text`），提供完美的终端交互视觉体验。
-- **健壮的状态追踪**：沿用了原项目中经过实战检验的基于文件系统的任务编排队列，完美支持 `--background` 后台挂起与多任务统筹。
-- **跨平台优化**：在底层补齐了包含中文 Windows 系统在内的多处平台兼容性 Bug（如修正了中文版 `taskkill` 返回值识别），保障了真正的多端稳定。
+---
 
-### 它会使用我现有的 Kimi 登录状态吗？
-是的。此插件直接调用你系统环境中的 `kimi` 可执行文件。它使用与你手动在终端运行 Kimi 时完全相同的身份验证信息和配置。
+## 🛡️ 安全与生命周期
+
+- **自动清理**：当 Claude 会话结束时，所有后台 Kimi 进程将自动终止。
+- **安全关卡**：在退出或 `/stop` 时，会拦截未提交的代码更改，并引导一次快速的 Kimi 安全扫描。
 
 ## 致谢 (Acknowledgments)
 
-本项目派生（Fork）且深度借鉴了 [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc) 开源项目极其优秀的架构模式。我们沿用了其稳健的异步底层调度闭环，将其裁剪并重构为了一个适配 Kimi 环境的纯享直连轻量化版本。原项目所有的基础扩展骨架与交互设计理念，其核心版权和创意均归 OpenAI 作者团队所有。特此致谢！
+特别鸣谢 [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc) 提供的卓越异步调度与任务追踪架构。我们沿用了其极其稳健的设计模式，并将其重构为 Kimi 原生的轻量化版本。

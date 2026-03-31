@@ -90,6 +90,41 @@ function extractAssistantThinking(content) {
 }
 
 /**
+ * Format a brief human-readable summary for a tool call.
+ * @param {string} toolName
+ * @param {string|null} rawArguments - JSON-encoded arguments string from Kimi
+ */
+function formatToolCallSummary(toolName, rawArguments) {
+  try {
+    const args = JSON.parse(rawArguments ?? "{}");
+    if (toolName === "Shell" && args.command) {
+      return `Shell: ${String(args.command).slice(0, 100)}`;
+    }
+    if ((toolName === "ReadFile" || toolName === "WriteFile" || toolName === "StrReplaceFile") && args.path) {
+      return `${toolName}: ${args.path}`;
+    }
+    if (toolName === "Glob" && (args.pattern || args.glob)) {
+      return `Glob: ${args.pattern ?? args.glob}`;
+    }
+    if (toolName === "Grep" && (args.pattern || args.regex)) {
+      return `Grep: ${args.pattern ?? args.regex}`;
+    }
+    if (toolName === "SearchWeb" && args.query) {
+      return `SearchWeb: ${args.query}`;
+    }
+    if (toolName === "FetchURL" && args.url) {
+      return `FetchURL: ${args.url}`;
+    }
+    if ((toolName === "Task" || toolName === "CreateSubagent") && args.prompt) {
+      return `${toolName}: ${String(args.prompt).slice(0, 60)}`;
+    }
+  } catch {
+    // non-JSON arguments, fall through
+  }
+  return toolName;
+}
+
+/**
  * Calculate the total text length for progress reporting.
  */
 function contentTextLength(content) {
@@ -140,17 +175,57 @@ export function runKimiTask(cwd, prompt, options = {}) {
 
           // Report progress
           if (options.onProgress) {
+            // Legacy progress/status events
             if (event.type === "progress" || event.type === "status") {
               options.onProgress({
                 message: event.message ?? event.status ?? trimmed,
                 phase: event.phase ?? null
               });
-            } else if (event.role === "assistant" && event.content) {
-              const textLen = contentTextLength(event.content);
+            }
+
+            // Tool calls from assistant (Kimi executing tools)
+            if (event.role === "assistant" && Array.isArray(event.tool_calls) && event.tool_calls.length > 0) {
+              for (const toolCall of event.tool_calls) {
+                if (toolCall.type === "function" && toolCall.function) {
+                  const toolName = toolCall.function.name ?? "tool";
+                  const toolSummary = formatToolCallSummary(toolName, toolCall.function.arguments);
+                  options.onProgress({
+                    message: toolSummary,
+                    phase: "tool_call",
+                    toolName,
+                    toolCallId: toolCall.id
+                  });
+                }
+              }
+            }
+
+            // Tool results (outcome of a tool execution)
+            if (event.role === "tool") {
               options.onProgress({
-                message: `Kimi responded (${textLen} chars)`,
-                phase: "responding"
+                message: `Tool result: ${event.is_error ? "error" : "done"}`,
+                phase: "tool_result",
+                toolCallId: event.tool_call_id
               });
+            }
+
+            // Notifications (info/warning/error from Kimi internals)
+            if (event.category) {
+              const notifMsg = event.title ?? event.body ?? event.category;
+              options.onProgress({
+                message: `[${event.severity ?? "info"}] ${notifMsg}`,
+                phase: "notification"
+              });
+            }
+
+            // Assistant text response
+            if (event.role === "assistant" && event.content) {
+              const textLen = contentTextLength(event.content);
+              if (textLen > 0) {
+                options.onProgress({
+                  message: `Kimi responded (${textLen} chars)`,
+                  phase: "responding"
+                });
+              }
             }
           }
 

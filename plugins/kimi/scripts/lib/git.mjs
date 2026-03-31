@@ -207,3 +207,16 @@ export function collectReviewContext(cwd, target) {
     ...details
   };
 }
+
+export function getChangeSummary(cwd) {
+  const state = getWorkingTreeState(cwd);
+  if (!state.isDirty) {
+    return { hasChanges: false, content: "" };
+  }
+  const context = collectWorkingTreeContext(cwd, state);
+  return {
+    hasChanges: true,
+    content: context.content,
+    summary: context.summary
+  };
+}

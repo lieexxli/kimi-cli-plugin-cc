@@ -105,6 +105,23 @@ function inferJobPhase(job, progressPreview = []) {
     if (line.startsWith("starting kimi") || line.startsWith("kimi cli ready")) {
       return "starting";
     }
+    // Tool-call based phases from stream-json parsing
+    if (line.startsWith("shell:")) {
+      return "executing";
+    }
+    if (line.startsWith("readfile:") || line.startsWith("glob:") || line.startsWith("grep:")) {
+      return "investigating";
+    }
+    if (line.startsWith("writefile:") || line.startsWith("strreplaceFile:")) {
+      return "editing";
+    }
+    if (line.startsWith("searchweb:") || line.startsWith("fetchurl:")) {
+      return "researching";
+    }
+    if (line.startsWith("task:") || line.startsWith("createsubagent:")) {
+      return "delegating";
+    }
+    // Legacy patterns
     if (line.startsWith("searching:") || line.startsWith("calling ") || line.startsWith("running tool:")) {
       return "investigating";
     }

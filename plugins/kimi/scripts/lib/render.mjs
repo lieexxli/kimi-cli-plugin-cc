@@ -31,6 +31,19 @@ function appendActiveJobsTable(lines, jobs) {
   }
 }
 
+function getToolStatusSymbol(status) {
+  switch (status) {
+    case "completed":
+      return "✅";
+    case "failed":
+      return "❌";
+    case "running":
+      return "⏳";
+    default:
+      return "⚪";
+  }
+}
+
 function pushJobDetails(lines, job, options = {}) {
   lines.push(`- ${formatJobLine(job)}`);
   if (job.summary) {
@@ -39,6 +52,14 @@ function pushJobDetails(lines, job, options = {}) {
   if (job.phase) {
     lines.push(`  Phase: ${job.phase}`);
   }
+
+  if (Array.isArray(job.activeTools) && job.activeTools.length > 0) {
+    lines.push("  Steps:");
+    for (const tool of job.activeTools) {
+      lines.push(`    ${getToolStatusSymbol(tool.status)} ${tool.summary || tool.name}`);
+    }
+  }
+
   if (options.showElapsed && job.elapsed) {
     lines.push(`  Elapsed: ${job.elapsed}`);
   }

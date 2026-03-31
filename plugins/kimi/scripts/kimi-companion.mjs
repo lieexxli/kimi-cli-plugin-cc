@@ -59,7 +59,8 @@ function printUsage() {
       "  node scripts/kimi-companion.mjs review [--wait|--background] [--base <ref>] [--scope <auto|working-tree|branch>]",
       "  node scripts/kimi-companion.mjs status [job-id] [--all] [--json]",
       "  node scripts/kimi-companion.mjs result [job-id] [--json]",
-      "  node scripts/kimi-companion.mjs cancel [job-id] [--json]"
+      "  node scripts/kimi-companion.mjs cancel [job-id] [--json]",
+      "  node scripts/kimi-companion.mjs resume <job-id> [new prompt] [--model <model>] [--json]"
     ].join("\n")
   );
 }
@@ -221,14 +222,16 @@ async function executeReviewRun(request) {
 
   let prompt;
   try {
-    const template = loadPromptTemplate(ROOT_DIR, "review");
+    const templateName = request.adversarial ? "review_adversarial" : "review";
+    const template = loadPromptTemplate(ROOT_DIR, templateName);
     prompt = interpolateTemplate(template, {
       TARGET_LABEL: target.label,
       REVIEW_INPUT: context.content
     });
-  } catch {
+  } catch (error) {
     // Fallback if template is missing
-    prompt = `Please review the following code changes and provide feedback on bugs, security issues, performance problems, and code quality.\n\nTarget: ${target.label}\n\n${context.content}`;
+    const persona = request.adversarial ? "strict security expert" : "standard auditor";
+    prompt = `Please act as a ${persona} and review the following code changes and provide feedback on bugs, security issues, performance problems, and code quality.\n\nTarget: ${target.label}\n\n${context.content}`;
   }
 
   const result = await runKimiQuiet(context.repoRoot, prompt, {
@@ -261,7 +264,7 @@ async function executeReviewRun(request) {
 
 // ─── job helpers ───
 
-function createCompanionJob({ prefix, kind, title, workspaceRoot, jobClass, summary, write = false }) {
+function createCompanionJob({ prefix, kind, title, workspaceRoot, jobClass, summary, write = false, kimiSessionId = null }) {
   return createJobRecord({
     id: generateJobId(prefix),
     kind,
@@ -270,7 +273,8 @@ function createCompanionJob({ prefix, kind, title, workspaceRoot, jobClass, summ
     workspaceRoot,
     jobClass,
     summary,
-    write
+    write,
+    ...(kimiSessionId ? { kimiSessionId } : {})
   });
 }
 
@@ -293,7 +297,7 @@ function buildTaskMetadata(prompt) {
   };
 }
 
-function buildTaskJob(workspaceRoot, taskMetadata, write) {
+function buildTaskJob(workspaceRoot, taskMetadata, write, kimiSessionId = null) {
   return createCompanionJob({
     prefix: "task",
     kind: "task",
@@ -301,7 +305,8 @@ function buildTaskJob(workspaceRoot, taskMetadata, write) {
     workspaceRoot,
     jobClass: "task",
     summary: taskMetadata.summary,
-    write
+    write,
+    kimiSessionId
   });
 }
 
@@ -396,6 +401,10 @@ async function handleTask(argv) {
   const write = Boolean(options.write);
   const taskMetadata = buildTaskMetadata(prompt);
 
+  // Auto-generate a session ID so this task can be resumed later.
+  // If the user passed an explicit --session, use that instead.
+  const effectiveSession = session ?? generateJobId("ses");
+
   if (options.background) {
     const kimiStatus = getKimiAvailability(cwd);
     if (!kimiStatus.available) {
@@ -405,13 +414,13 @@ async function handleTask(argv) {
       throw new Error("Provide a prompt for the Kimi task.");
     }
 
-    const job = buildTaskJob(workspaceRoot, taskMetadata, write);
+    const job = buildTaskJob(workspaceRoot, taskMetadata, write, effectiveSession);
     const request = {
       cwd,
       model,
       thinking,
       maxSteps,
-      session,
+      session: effectiveSession,
       continueSession,
       prompt,
       write,
@@ -422,7 +431,7 @@ async function handleTask(argv) {
     return;
   }
 
-  const job = buildTaskJob(workspaceRoot, taskMetadata, write);
+  const job = buildTaskJob(workspaceRoot, taskMetadata, write, effectiveSession);
   await runForegroundCommand(
     job,
     (progress) =>
@@ -431,7 +440,7 @@ async function handleTask(argv) {
         model,
         thinking,
         maxSteps,
-        session,
+        session: effectiveSession,
         continueSession,
         prompt,
         write,
@@ -490,7 +499,7 @@ async function handleTaskWorker(argv) {
 async function handleReview(argv) {
   const { options } = parseCommandInput(argv, {
     valueOptions: ["base", "scope", "model", "cwd"],
-    booleanOptions: ["json", "background", "wait"],
+    booleanOptions: ["json", "background", "wait", "adversarial"],
     aliasMap: {
       m: "model"
     }
@@ -516,6 +525,7 @@ async function handleReview(argv) {
         base: options.base,
         scope: options.scope,
         model: options.model,
+        adversarial: Boolean(options.adversarial),
         onProgress: progress
       }),
     { json: options.json }
@@ -587,6 +597,57 @@ function handleResult(argv) {
   };
 
   outputCommandResult(payload, renderStoredJobResult(job, storedJob), options.json);
+}
+
+async function handleResume(argv) {
+  const { options, positionals } = parseCommandInput(argv, {
+    valueOptions: ["cwd", "model"],
+    booleanOptions: ["json"],
+    aliasMap: { m: "model" }
+  });
+
+  const cwd = resolveCommandCwd(options);
+  const workspaceRoot = resolveCommandWorkspace(options);
+
+  // First positional is the job reference; remaining are the new prompt (optional).
+  const reference = positionals[0] ?? "";
+  const extraPrompt = positionals.slice(1).join(" ").trim();
+
+  const { job } = resolveResultJob(cwd, reference);
+  const storedJob = readStoredJob(workspaceRoot, job.id);
+
+  // Session ID can be stored directly on the job or inside its request payload.
+  const kimiSessionId = storedJob?.kimiSessionId ?? storedJob?.request?.session ?? null;
+  if (!kimiSessionId) {
+    throw new Error(
+      `Job ${job.id} has no stored session ID. Only jobs created after the session-resume feature was added can be resumed.`
+    );
+  }
+
+  const originalPrompt = storedJob?.request?.prompt ?? "";
+  const resumePrompt = extraPrompt || "Please continue where you left off.";
+
+  const taskMetadata = buildTaskMetadata(resumePrompt || originalPrompt);
+  const resumeJob = buildTaskJob(workspaceRoot, taskMetadata, false, kimiSessionId);
+
+  process.stderr.write(`[kimi] Resuming session ${kimiSessionId} (original job: ${job.id})\n`);
+
+  await runForegroundCommand(
+    resumeJob,
+    (progress) =>
+      executeTaskRun({
+        cwd,
+        model: options.model ?? storedJob?.request?.model ?? null,
+        thinking: storedJob?.request?.thinking,
+        session: kimiSessionId,
+        continueSession: true,
+        prompt: resumePrompt,
+        write: false,
+        title: `Resume ${job.id}`,
+        onProgress: progress
+      }),
+    { json: options.json }
+  );
 }
 
 async function handleCancel(argv) {
@@ -666,6 +727,9 @@ async function main() {
       break;
     case "cancel":
       await handleCancel(argv);
+      break;
+    case "resume":
+      await handleResume(argv);
       break;
     default:
       throw new Error(`Unknown subcommand: ${subcommand}`);

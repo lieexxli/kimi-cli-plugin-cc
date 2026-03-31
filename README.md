@@ -1,138 +1,94 @@
-# Kimi CLI plugin for Claude Code
+# Kimi CLI Plugin for Claude Code (CC)
 
-English | [简体中文](README_zh.md)
+[![GitHub License](https://img.shields.io/github/license/lieexxli/kimi-cli-plugin-cc)](LICENSE)
+[![Status](https://img.shields.io/badge/status-active-success.svg)]()
 
-Use Kimi from inside Claude Code for code reviews or to delegate tasks to the Kimi CLI agent.
+> A specialized deep-refactor of `openai/codex-plugin-cc` tailored for Kimi CLI. We’ve stripped away heavy RPC legacy in favor of raw performance and seamless automation with `kimi-cli`.
 
-This plugin is for Claude Code users who want an easy way to start using Kimi from the workflow they already have, taking advantage of a powerful independent coding agent for second opinions or heavy lifting.
-
-## What You Get
-- `/kimi:review` for a read-only code review by Kimi
-- `/kimi:rescue`, `/kimi:status`, `/kimi:result`, and `/kimi:cancel` to delegate work and manage background jobs
-- Powerful delegation using Kimi's `--thinking` mode and custom models
-
-## Requirements
-- **Kimi CLI installed** on your system.
-- **Node.js 18.18 or later**.
-
-## Install
-
-You can install the plugin directly using its GitHub URL:
-
-```bash
-claude plugin add https://github.com/lieexxli/kimi-cli-plugin-cc
-```
-
-Or clone it locally and install from the local path:
-
-```bash
-git clone https://github.com/lieexxli/kimi-cli-plugin-cc.git
-claude plugin add /path/to/kimi-cli-plugin-cc
-```
-
-Then run:
-
-```bash
-/kimi:setup
-```
-
-`/kimi:setup` will tell you whether Kimi is ready and available on your PATH.
-
-If Kimi is installed but not logged in yet, you will need to authenticate:
-
-```bash
-!kimi login
-```
-
-After installing, you should see:
-- the slash commands listed below
-- the `kimi:kimi-rescue` subagent in `/agents`
+[English](README.md) | [简体中文](README_zh.md)
 
 ---
 
-## Commands
+## 🚀 Positioning: From "Armored Truck" to "Supercar"
 
-### `/kimi:review`
-Runs a code review on your current work. Use it when you want an independent review of your uncommitted changes or your branch compared to a base branch.
+This project is a **massive architectural reduction** of the original `openai/codex-plugin-cc`. While the original was built for enterprise-grade "absolute safety," the **Kimi CLI Plugin** focuses on leveraging Kimi’s native long-context window and blazing execution speed.
 
-Examples:
+### Core Comparison
+
+| Feature | Original Codex (`codex-plugin-cc`) | Kimi Adapted (This Project) |
+| :--- | :--- | :--- |
+| **Architecture** | **RPC / Broker Server** (Heavy state) | **Native Subprocess** (Low-latency, lightweight) |
+| **Execution** | **Forced Review Gate** (Manual confirmation) | **Full Auto YOLO** (Autonomous by default) |
+| **Parsing** | **Heavy Telemetry** (Complex MCP tracking) | **Stream Parsing** (Real-time tool & thinking traces) |
+| **Philosophy** | High-safety, prevents hallucinations via audit | High-throughput, developer-centric automation |
+
+---
+
+## ✨ Key Features
+
+- **🚀 Zero-Config Startup**: No heavy broker setup. If `kimi` is in your PATH, you're ready.
+- **📊 Real-time Progress Tracking**: See Kimi’s internal steps (Shell, File I/O) with live status indicators (⏳, ✅, ❌) in your terminal.
+- **🧠 Thinking Model Integration**: Native support for `--thinking`, forcing deep reasoning before action.
+- **⚡ Quiet & Autonomous**: Persistent `--yolo` injection ensures complex refactors run without constant hand-holding.
+- **🛡️ Adversarial Review**: A dedicated security-first review mode to find hidden bugs and vulnerabilities.
+- **⚠️ Safety Review Gate**: Automatically scans your uncommitted changes when you exit a session to prevent shipping bugs.
+- **🔄 Session Persistence**: Inherits Kimi's session state via `--session` and `--continue`.
+
+---
+
+## 📖 Usage
+
+### Commands
+
+| Command | Description |
+| :--- | :--- |
+| `/kimi:task` | Main entry point for any Kimi task (e.g., refactoring, debugging). |
+| `/kimi:status` | Check background job status and see **real-time tool progress**. |
+| `/kimi:review` | Standard code review for current git changes. |
+| `/kimi:review-adversarial`| **Security-focused** adversarial review with a strict persona. |
+| `/kimi:result` | View final output of a completed background job. |
+| `/kimi:cancel` | Terminate a running background job. |
+| `/kimi:resume` | Continue a previous Kimi session using its Job ID. |
+| `/kimi:setup` | Verify your Kimi CLI environment and installation status. |
+
+### Examples
+
 ```bash
-/kimi:review
-/kimi:review --base main
-/kimi:review --background
-```
+# Run a task in the background with deep thinking
+/kimi:task --background --thinking "refactor the auth layer to use JWT"
 
-This command is read-only. When run in the background, use `/kimi:status` to check progress.
-
-### `/kimi:rescue`
-Hands a task over to Kimi through the `kimi:kimi-rescue` subagent.
-
-Use it when you want Kimi to:
-- investigate a tricky bug
-- write a fix while you do something else
-- continue a long-running investigation
-
->**Note:** By default, Kimi tasks from this plugin are read-only to protect your workspace. To allow Kimi to modify your files, explicitly add the `--write` flag.
-
-Options supported:
-- `--background`: Run the task in the background
-- `--write`: Allow Kimi to modify files
-- `--thinking` / `--no-thinking`: Enable or disable extended reasoning
-- `--model <model>`: Specify a specific model to use
-
-Examples:
-```bash
-/kimi:rescue investigate why the tests started failing
-/kimi:rescue --write fix the failing test with the smallest safe patch
-/kimi:rescue --background --thinking "refactor the database layer"
-```
-
-You can also use natural language to let Claude decide how to use the subagent:
-```text
-Ask Kimi to review the database connection code and see if it is resilient.
-```
-
-### `/kimi:status`
-Shows running and recent Kimi tasks in the current repository.
-
-Examples:
-```bash
-/kimi:status
+# Check the real-time steps of a running job
 /kimi:status task-abc123
+
+# Run a high-pressure security review
+/kimi:review-adversarial --scope working-tree
 ```
 
-### `/kimi:result`
-Shows the final output for a finished background job. 
+---
 
-Examples:
-```bash
-/kimi:result
-/kimi:result task-abc123
-```
+## 🛠️ Setup
 
-### `/kimi:cancel`
-Cancels an active background Kimi job.
+1. **Prerequisites**: Install Kimi CLI and log in.
+    ```bash
+    npm install -g @anthropic/kimi-cli
+    kimi login
+    ```
+2. **Installation**: Add the plugin to your Claude Code configuration.
 
-Examples:
-```bash
-/kimi:cancel
-/kimi:cancel task-abc123
-```
+---
 
-## How It Works
+## 🏗️ Architecture
 
-This plugin wraps the [Kimi CLI](https://github.com/MoonshotAI/kimi-cli) local binary. It leverages Claude Code's extension system to spawn sub-processes for foreground and background execution. 
+Unlike the original Codex plugin which uses a persistent `app-server`, this plugin takes a minimalist approach:
+- **Direct Spawn**: Spawns `kimi-cli` as a subprocess for every task.
+- **JSONL Stream Parsing**: Directly reads `--output-format stream-json` to separate `thinking` traces from `text` output in real-time.
+- **Stop Hook Hook**: Registers a session-end hook to perform safety checks and cleanup background processes.
 
-### Minimalist Architecture
-Unlike the original official Codex plugin (which uses a heavy `app-server` and `broker` architecture with complex TypeScript protocols), this Kimi plugin takes a drastically simplified approach:
-- **No Broker/App-Server**: It directly uses a lightweight `kimi-companion.mjs` script to spawn Kimi processes.
-- **Native JSONL Parsing**: Progress reporting works by directly reading the Kimi CLI's `--output-format stream-json`, separating `thinking` traces from `text` output in real-time.
-- **Robust State Management**: It reuses the battle-tested filesystem-based job tracking from the Codex plugin to support robust background running (`--background`) and cancellation.
-- **Cross-Platform**: Includes specific patches for proper process termination (`taskkill`) on localized Windows environments.
+## 🛡️ Safety & Lifecycle
 
-### Will it use my existing Kimi login?
-Yes. The plugin delegates directly to the local `kimi` executable in your environment. It uses the same authentication state and configurations you've already set up.
+- **Automatic Cleanup**: Background processes are terminated when the Claude session ends.
+- **Review Gate**: Intercepts session exits to warn you about uncommitted changes with a quick Kimi scan.
 
 ## Acknowledgments
 
-This project is a fork of and conceptually inspired by the excellent baseline architecture provided by [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc). We adapted their cleanly designed task-runner and job-tracking architecture to build this lightweight, Kimi-native iteration. All structural credit for the overarching plugin design goes to the original authors at OpenAI.
+Special thanks to [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc) for the excellent asynchronous scheduling and job-tracking architecture. We adapted their structural patterns to build this lightweight, Kimi-native iteration.

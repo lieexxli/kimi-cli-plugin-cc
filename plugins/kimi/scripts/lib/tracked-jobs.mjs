@@ -16,7 +16,9 @@ function normalizeProgressEvent(value) {
       phase: typeof value.phase === "string" && value.phase.trim() ? value.phase.trim() : null,
       stderrMessage: value.stderrMessage == null ? null : String(value.stderrMessage).trim(),
       logTitle: typeof value.logTitle === "string" && value.logTitle.trim() ? value.logTitle.trim() : null,
-      logBody: value.logBody == null ? null : String(value.logBody).trimEnd()
+      logBody: value.logBody == null ? null : String(value.logBody).trimEnd(),
+      toolName: value.toolName ?? null,
+      toolCallId: value.toolCallId ?? null
     };
   }
 
@@ -65,13 +67,31 @@ export function createJobRecord(base, options = {}) {
 
 export function createJobProgressUpdater(workspaceRoot, jobId) {
   let lastPhase = null;
+  const toolCalls = new Map();
 
   return (event) => {
     const normalized = normalizeProgressEvent(event);
     const patch = { id: jobId };
     let changed = false;
 
-    if (normalized.phase && normalized.phase !== lastPhase) {
+    if (normalized.phase === "tool_call" && normalized.toolCallId) {
+      toolCalls.set(normalized.toolCallId, {
+        name: normalized.toolName ?? "tool",
+        summary: normalized.message,
+        status: "running",
+        startedAt: nowIso()
+      });
+      changed = true;
+    } else if (normalized.phase === "tool_result" && normalized.toolCallId) {
+      const call = toolCalls.get(normalized.toolCallId);
+      if (call) {
+        call.status = normalized.message.includes("error") ? "failed" : "completed";
+        call.completedAt = nowIso();
+        changed = true;
+      }
+    }
+
+    if (normalized.phase && normalized.phase !== lastPhase && !normalized.phase.startsWith("tool_")) {
       lastPhase = normalized.phase;
       patch.phase = normalized.phase;
       changed = true;
@@ -79,6 +99,10 @@ export function createJobProgressUpdater(workspaceRoot, jobId) {
 
     if (!changed) {
       return;
+    }
+
+    if (toolCalls.size > 0) {
+      patch.activeTools = Array.from(toolCalls.values());
     }
 
     upsertJob(workspaceRoot, patch);

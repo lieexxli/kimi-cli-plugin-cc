@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(kimi:setup)",
+      "Bash(node:*)",
+      "Bash(ls -lah *.md)",
+      "Skill(kimi:review)",
+      "mcp__deepwiki__read_wiki_structure",
+      "mcp__deepwiki__read_wiki_contents",
+      "mcp__deepwiki__ask_question",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(d[''''result''''][:8000]\\)\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d[''''result''''][:5000]\\)\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(d[''''result''''][8000:20000]\\)\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d[''''result''''][5000:12000]\\)\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d[''''result''''][12000:20000]\\)\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); t=d[''''result'''']; idx=t.find\\(''''# Page: Core Architecture''''\\); print\\(t[idx:idx+12000]\\)\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); t=d[''''result'''']; idx=t.find\\(''''# Page: Tool Architecture''''\\); print\\(t[idx:idx+10000]\\)\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d[''''result''''][20000:28000]\\)\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); t=d[''''result'''']; idx=t.find\\(''''# Page: Configuration File Structure''''\\); print\\(t[idx:idx+10000]\\)\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); t=d[''''result'''']; idx=t.find\\(''''# Page: Session Lifecycle''''\\); print\\(t[idx:idx+10000]\\)\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d[''''result''''][28000:36000]\\)\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d[''''result''''][36000:44000]\\)\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); t=d[''''result'''']; idx=t.find\\(''''# Page: Agent Specification Format''''\\); print\\(t[idx:idx+8000]\\)\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); t=d[''''result'''']; idx=t.find\\(''''# Page: MCP Integration''''\\); print\\(t[idx:idx+8000]\\)\")",
+      "Bash(python -c \":*)",
+      "Bash(find /c/Users/lihao/Downloads/project2025/codex/codex-cli -name *.mjs -path */codex/*)",
+      "Bash(find /c/Users/lihao/Downloads/project2025/codex/codex-cli -name *.mjs)",
+      "Bash(find /c/Users/lihao/Downloads/project2025/codex/ -path *plugin* -name *.mjs)",
+      "Bash(find /c/Users/lihao/Downloads/project2025/codex/ -path *plugin* -type f)",
+      "Bash(find /c/Users/lihao/Downloads/project2025/kimi-cli -name *.py -path *output*)",
+      "Bash(find /c/Users/lihao/Downloads/project2025/kimi-cli -name *.py -path *stream*)",
+      "Bash(find /c/Users/lihao/Downloads/project2025/kimi-cli -name *.py -path *format*)"
+    ]
+  }
+}
