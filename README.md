@@ -127,3 +127,7 @@ Unlike more complex plugins (like Codex), this plugin takes a minimalist approac
 
 ### Will it use my existing Kimi login?
 Yes. The plugin delegates directly to the local `kimi` executable in your environment. It uses the same authentication state and configurations you've already set up.
+
+## Acknowledgments
+
+This project is a fork of and heavily inspired by the official [codex-plugin-cc](https://github.com/anthropics/codex-plugin-cc) repository authored by the team at Anthropic. We adapted their cleanly designed task-runner and plugin architecture to bridge Claude Code with the Moonshot Kimi CLI instead of OpenAI Codex. All structural credit goes to the original authors.

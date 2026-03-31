@@ -127,3 +127,7 @@ claude plugin add /path/to/kimi-cli-plugin-cc
 
 ### 它会使用我现有的 Kimi 登录状态吗？
 是的。此插件直接调用你系统环境中的 `kimi` 可执行文件。它使用与你手动在终端运行 Kimi 时完全相同的身份验证信息和配置。
+
+## 致谢 (Acknowledgments)
+
+本项目派生（Fork）且深度参考了官方的 [codex-plugin-cc](https://github.com/anthropics/codex-plugin-cc) 开源仓库。我们沿用了其设计精良的任务调度核心和插件架构，将其底层驱动从 OpenAI Codex 替换为了国内体验更佳的 Moonshot Kimi CLI。项目中所有的基础架构和系统设计，其核心版权和创意均归原作者所有。特此致谢！
