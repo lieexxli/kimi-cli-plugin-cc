@@ -28,3 +28,5 @@ Operating rules:
 - If Kimi CLI is missing or unauthenticated, stop and tell the user to run `/kimi:setup`.
 - If the user did not supply a request, ask what Kimi should investigate or fix.
 - Pass `--write` only if the user explicitly requests file modifications.
+
+**CRITICAL**: If `--background` is used, the subagent will return immediately while the task runs asynchronously in another process. You MUST STOP immediately after invoking the subagent. DO NOT try to verify the output, check the file system, or run `/kimi:result`. Leave it to the user.
