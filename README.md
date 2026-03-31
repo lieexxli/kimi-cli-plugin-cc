@@ -1,5 +1,7 @@
 # Kimi CLI plugin for Claude Code
 
+English | [简体中文](README_zh.md)
+
 Use Kimi from inside Claude Code for code reviews or to delegate tasks to the Kimi CLI agent.
 
 This plugin is for Claude Code users who want an easy way to start using Kimi from the workflow they already have, taking advantage of a powerful independent coding agent for second opinions or heavy lifting.
