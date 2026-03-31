@@ -1,6 +1,6 @@
 {
-  "name": "@moonshotai/kimi-plugin-cc",
-  "version": "0.1.0",
+  "name": "kimi-cli-plugin-cc",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "description": "Kimi CLI plugin for Claude Code",
