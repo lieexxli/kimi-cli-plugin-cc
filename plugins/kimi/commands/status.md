@@ -5,7 +5,10 @@ disable-model-invocation: true
 allowed-tools: Bash(node:*)
 ---
 
-!`node "${CLAUDE_PLUGIN_ROOT}/scripts/kimi-companion.mjs" status $ARGUMENTS`
+```bash
+K_SCRIPT=$(echo "${CLAUDE_PLUGIN_ROOT}/scripts/kimi-companion.mjs" | sed 's/\\/\//g')
+node "$K_SCRIPT" status $ARGUMENTS
+```
 
 If the user did not pass a job ID:
 - Render the command output as a single Markdown table for the current and past runs in this session.

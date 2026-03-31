@@ -1,0 +1,9 @@
+{
+  "ready": true,
+  "kimi": {
+    "available": true,
+    "detail": "kimi, version 1.28.0"
+  },
+  "actionsTaken": [],
+  "nextSteps": []
+}

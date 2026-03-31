@@ -7,7 +7,8 @@ allowed-tools: Bash(node:*), AskUserQuestion
 Run:
 
 ```bash
-node "${CLAUDE_PLUGIN_ROOT}/scripts/kimi-companion.mjs" setup --json $ARGUMENTS
+KIMI_SCRIPT=$(echo "${CLAUDE_PLUGIN_ROOT}/scripts/kimi-companion.mjs" | sed 's/\\/\//g')
+node "$KIMI_SCRIPT" setup --json $ARGUMENTS
 ```
 
 If the result says Kimi CLI is unavailable:

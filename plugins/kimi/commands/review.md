@@ -10,7 +10,8 @@ Route this request to run a Kimi code review.
 Run:
 
 ```bash
-node "${CLAUDE_PLUGIN_ROOT}/scripts/kimi-companion.mjs" review $ARGUMENTS
+K_SCRIPT=$(echo "${CLAUDE_PLUGIN_ROOT}/scripts/kimi-companion.mjs" | sed 's/\\/\//g')
+node "$K_SCRIPT" review $ARGUMENTS
 ```
 
 Operating rules:

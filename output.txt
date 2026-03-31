@@ -1,0 +1,6 @@
+# Kimi CLI Setup
+
+Status: ready
+
+Checks:
+- kimi: kimi, version 1.28.0
