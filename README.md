@@ -45,7 +45,7 @@ This project is a **massive architectural reduction** of the original `openai/co
 | `/kimi:task` | Main entry point for any Kimi task (e.g., refactoring, debugging). |
 | `/kimi:status` | Check background job status and see **real-time tool progress**. |
 | `/kimi:review` | Standard code review for current git changes. |
-| `/kimi:review-adversarial`| **Security-focused** adversarial review with a strict persona. |
+| `/kimi:adversarial-review`| **Security-focused** adversarial review with a strict persona. |
 | `/kimi:result` | View final output of a completed background job. |
 | `/kimi:cancel` | Terminate a running background job. |
 | `/kimi:resume` | Continue a previous Kimi session using its Job ID. |
@@ -61,21 +61,9 @@ This project is a **massive architectural reduction** of the original `openai/co
 /kimi:status task-abc123
 
 # Run a high-pressure security review
-/kimi:review-adversarial --scope working-tree
+/kimi:adversarial-review --scope working-tree
 ```
 
----
-
-## 🛠️ Setup
-
-1. **Prerequisites**: Install Kimi CLI and log in.
-    ```bash
-    npm install -g @anthropic/kimi-cli
-    kimi login
-    ```
-2. **Installation**: Add the plugin to your Claude Code configuration.
-
----
 
 ## 🏗️ Architecture
 

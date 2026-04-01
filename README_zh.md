@@ -45,7 +45,7 @@
 | `/kimi:task` | 发起任务（重构、Debug、写功能等）。 |
 | `/kimi:status` | 查看后台任务状态及**实时工具执行进度**。 |
 | `/kimi:review` | 对当前 Git 更改进行标准代码审查。 |
-| `/kimi:review-adversarial`| **对抗性审计模式**，以更严苛的视觉扫描安全性问题。 |
+| `/kimi:adversarial-review` | **对抗性审计模式**，以更严苛的视觉扫描安全性问题。 |
 | `/kimi:result` | 查看已完成任务的最终输出。 |
 | `/kimi:cancel` | 终止正在运行的后台任务。 |
 | `/kimi:resume` | 通过 Job ID 恢复之前的 Kimi 会话。 |
@@ -61,21 +61,9 @@
 /kimi:status task-abc123
 
 # 发起一次高强度的安全性审查
-/kimi:review-adversarial --scope working-tree
+/kimi:adversarial-review --scope working-tree
 ```
 
----
-
-## 🛠️ 安装与设置
-
-1. **前置条件**：安装 Kimi CLI 并登录。
-    ```bash
-    npm install -g @anthropic/kimi-cli
-    kimi login
-    ```
-2. **插件安装**：将本插件目录添加到你的 Claude Code 配置中。
-
----
 
 ## 🏗️ 架构说明
 
