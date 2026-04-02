@@ -1,16 +1,16 @@
 {
   "name": "kimi-cli",
-  "owner": { "name": "MoonshotAI" },
+  "owner": { "name": "lieexxli" },
   "metadata": {
     "description": "Kimi CLI plugin for Claude Code: delegate tasks and review code with Kimi.",
-    "version": "0.1.0"
+    "version": "0.2.1"
   },
   "plugins": [
     {
       "name": "kimi",
       "description": "Use Kimi from Claude Code to delegate tasks or review code.",
-      "version": "0.1.0",
-      "author": { "name": "MoonshotAI" },
+      "version": "0.2.1",
+      "author": { "name": "lieexxli" },
       "source": "./plugins/kimi"
     }
   ]
