@@ -11,7 +11,7 @@
 
 ## 🚀 Positioning: From "Armored Truck" to "Supercar"
 
-This project is a **massive architectural reduction** of the original `openai/codex-plugin-cc`. While the original was built for enterprise-grade "absolute safety," the **Kimi CLI Plugin** focuses on leveraging Kimi’s native long-context window and blazing execution speed.
+This project references `openai/codex-plugin-cc`, featuring a specialized deep "subtraction" refactor and feature adaptation tailored for `kimi-cli`. We have completely discarded the heavy RPC architecture.
 
 ### Core Comparison
 
@@ -79,4 +79,4 @@ Unlike the original Codex plugin which uses a persistent `app-server`, this plug
 
 ## Acknowledgments
 
-Special thanks to [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc) for the excellent asynchronous scheduling and job-tracking architecture. We adapted their structural patterns to build this lightweight, Kimi-native iteration.
+Special thanks to [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc) for the excellent asynchronous scheduling and job-tracking architecture. We adapted their structural patterns to build this lightweight, Kimi CLI-native iteration.

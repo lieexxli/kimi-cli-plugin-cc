@@ -11,7 +11,7 @@
 
 ## 🚀 项目定位：从“装甲运钞车”到“超跑”的进化
 
-本项目是在 `openai/codex-plugin-cc` 基础上进行的**大幅度简化与适配重构**。原版 Codex 插件追求的是企业级的“绝对安全”，而 **Kimi CLI Plugin** 则专注于利用 Kimi 的长文本原生能力与极致的响应速度。
+本项目参考了 `openai/codex-plugin-cc` ，并针对 `kimi-cli` 进行了深度“减法”重构与 Kimi 特性适配。摒弃沉重的 RPC 架构。
 
 ### 核心差异对比
 
@@ -81,4 +81,4 @@
 
 ## 致谢 (Acknowledgments)
 
-特别鸣谢 [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc) 提供的卓越异步调度与任务追踪架构。我们沿用了其极其稳健的设计模式，并将其重构为 Kimi 原生的轻量化版本。
+特别鸣谢 [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc) 提供的卓越异步调度与任务追踪架构。我们沿用了其极其稳健的设计模式，并将其重构为 Kimi CLI 原生的轻量化版本。

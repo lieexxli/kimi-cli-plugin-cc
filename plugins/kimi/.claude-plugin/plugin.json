@@ -1,6 +1,6 @@
 {
   "name": "kimi",
   "version": "0.2.1",
-  "description": "Use Kimi from Claude Code to delegate tasks or review code.",
+  "description": "Use Kimi CLI from Claude Code to delegate tasks or review code.",
   "author": { "name": "lieexxli" }
 }

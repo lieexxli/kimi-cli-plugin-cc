@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "kimi",
-      "description": "Use Kimi from Claude Code to delegate tasks or review code.",
+      "description": "Use Kimi CLI from Claude Code to delegate tasks or review code.",
       "version": "0.2.1",
       "author": { "name": "lieexxli" },
       "source": "./plugins/kimi"
