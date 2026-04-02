@@ -25,7 +25,7 @@ function buildKimiArgs(prompt, options = {}) {
     args.push("--output-format", "stream-json");
   }
 
-  args.push("--", "-p", prompt);
+  args.push("-p", prompt);
 
   if (options.workDir) {
     args.push("--work-dir", options.workDir);
