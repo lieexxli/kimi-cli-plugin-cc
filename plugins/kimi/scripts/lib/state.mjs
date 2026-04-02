@@ -170,11 +170,17 @@ function removeJobFile(jobFile) {
 }
 
 export function resolveJobLogFile(cwd, jobId) {
+  if (!/^[a-zA-Z0-9_-]+$/.test(jobId)) {
+    throw new Error(`Invalid job ID: ${jobId}`);
+  }
   ensureStateDir(cwd);
   return path.join(resolveJobsDir(cwd), `${jobId}.log`);
 }
 
 export function resolveJobFile(cwd, jobId) {
+  if (!/^[a-zA-Z0-9_-]+$/.test(jobId)) {
+    throw new Error(`Invalid job ID: ${jobId}`);
+  }
   ensureStateDir(cwd);
   return path.join(resolveJobsDir(cwd), `${jobId}.json`);
 }

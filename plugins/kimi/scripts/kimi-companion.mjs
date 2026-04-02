@@ -387,7 +387,14 @@ async function handleTask(argv) {
   if (options.thinking) thinking = true;
   if (options["no-thinking"]) thinking = false;
 
-  const maxSteps = options["max-steps"] ? Number(options["max-steps"]) : null;
+  let maxSteps = null;
+  if (options["max-steps"]) {
+    const parsed = Number(options["max-steps"]);
+    if (!Number.isInteger(parsed) || parsed < 1 || parsed > 1000) {
+      throw new Error("--max-steps must be an integer between 1 and 1000");
+    }
+    maxSteps = parsed;
+  }
   const session = options.session ?? null;
   const continueSession = Boolean(options.continue);
 
@@ -661,7 +668,11 @@ async function handleCancel(argv) {
   const { workspaceRoot, job } = resolveCancelableJob(cwd, reference);
   const existing = readStoredJob(workspaceRoot, job.id) ?? {};
 
-  terminateProcessTree(job.pid ?? Number.NaN);
+  try {
+    terminateProcessTree(job.pid ?? Number.NaN);
+  } catch {
+    // Process may have already exited; proceed to update state regardless.
+  }
   appendLogLine(job.logFile, "Cancelled by user.");
 
   const completedAt = nowIso();

@@ -8,7 +8,7 @@ export function runCommand(command, args = [], options = {}) {
     encoding: "utf8",
     input: options.input,
     stdio: options.stdio ?? "pipe",
-    shell: process.platform === "win32"
+    shell: false
   });
 
   return {
@@ -49,7 +49,7 @@ export function binaryAvailable(command, versionArgs = ["--version"], options = 
 }
 
 function looksLikeMissingProcessMessage(text) {
-  return /not found|no running instance|cannot find|does not exist|no such process|找不到进程/i.test(text);
+  return /not found|no running instance|cannot find|does not exist|no such process|找不到进程|没有找到进程/i.test(text);
 }
 
 export function terminateProcessTree(pid, options = {}) {
