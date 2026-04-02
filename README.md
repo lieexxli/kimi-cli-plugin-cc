@@ -1,6 +1,6 @@
 # Kimi CLI Plugin for Claude Code (CC)
 
-[![GitHub License](https://img.shields.io/github/license/lieexxli/kimi-cli-plugin-cc)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/status-active-success.svg)]()
 
 > A specialized deep-refactor of `openai/codex-plugin-cc` tailored for Kimi CLI. We’ve stripped away heavy RPC legacy in favor of raw performance and seamless automation with `kimi-cli`.

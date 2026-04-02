@@ -4,5 +4,6 @@
   "private": true,
   "type": "module",
   "description": "Kimi CLI plugin for Claude Code",
+  "license": "MIT",
   "engines": { "node": ">=18.18.0" }
 }

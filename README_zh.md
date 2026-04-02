@@ -1,6 +1,6 @@
 # 适用于 Claude Code 的 Kimi CLI 插件
 
-[![GitHub License](https://img.shields.io/github/license/lieexxli/kimi-cli-plugin-cc)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/status-active-success.svg)]()
 
 > 基于 `openai/codex-plugin-cc` 进行深度“减法”重构与 Kimi 特性适配。摒弃沉重的 RPC 架构，换取针对 `kimi-cli` 的极致性能与全自动生产力转化。

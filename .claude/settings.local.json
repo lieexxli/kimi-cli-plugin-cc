@@ -29,7 +29,8 @@
       "Bash(find /c/Users/lihao/Downloads/project2025/codex/ -path *plugin* -type f)",
       "Bash(find /c/Users/lihao/Downloads/project2025/kimi-cli -name *.py -path *output*)",
       "Bash(find /c/Users/lihao/Downloads/project2025/kimi-cli -name *.py -path *stream*)",
-      "Bash(find /c/Users/lihao/Downloads/project2025/kimi-cli -name *.py -path *format*)"
+      "Bash(find /c/Users/lihao/Downloads/project2025/kimi-cli -name *.py -path *format*)",
+      "Skill(commit-commands:commit-push-pr)"
     ]
   }
 }
